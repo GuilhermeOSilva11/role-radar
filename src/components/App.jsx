@@ -1,3 +1,6 @@
+import Cartao from './Cartao.jsx'
+import Creditos from './Creditos.jsx'
+
 function App() {
   const estiloSubtitulo = {
     color: '#666',
@@ -17,6 +20,12 @@ function App() {
       <p style={estiloSubtitulo}>
         Descubra o que existe perto de você
       </p>
+
+      <Creditos />
+
+      <Cartao cabecalho="Teste">
+        <p>Conteúdo do cartão</p>
+      </Cartao>
 
       <footer>RolêRadar © {obterAno()}</footer>
     </div>
