@@ -1,6 +1,8 @@
 import { Component } from 'react'
 import Creditos from './Creditos.jsx'
 import Loading from './Loading.jsx'
+import Cartao from './Cartao.jsx'
+import MeuPonto from './MeuPonto.jsx'
 
 class App extends Component {
   state = {
@@ -62,10 +64,14 @@ class App extends Component {
         ) : this.state.latitude === null ? (
           <Loading mensagem="Aguardando permissão de localização..." />
         ) : (
-          <p>
-            Localização obtida: {this.state.latitude},{' '}
-            {this.state.longitude}
-          </p>
+          <Cartao cabecalho="Você está aqui">
+            <MeuPonto
+              latitude={this.state.latitude}
+              longitude={this.state.longitude}
+              horarioLocalizacao={this.state.horarioLocalizacao}
+              onAtualizar={this.obterLocalizacao}
+            />
+          </Cartao>
         )}
 
         <footer>RolêRadar © {this.obterAno()}</footer>
