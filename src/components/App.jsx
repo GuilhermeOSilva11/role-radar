@@ -3,8 +3,8 @@ import Creditos from './Creditos.jsx'
 import Loading from './Loading.jsx'
 import Cartao from './Cartao.jsx'
 import MeuPonto from './MeuPonto.jsx'
-import { Button } from '@primereact/ui/button'
 import geoapifyClient from '../utils/geoapifyClient.js'
+import Busca from './Busca.jsx'
 
 class App extends Component {
   state = {
@@ -90,12 +90,10 @@ onBuscaRealizada = (categoria, raio) => {
               />
             </Cartao>
 
-            <Button
-              type="button"
-              onClick={() => this.onBuscaRealizada('catering.cafe', 1000)}
-            >
-              Testar busca
-            </Button>
+            <Cartao cabecalho="O que você procura?">
+              <Busca onBuscaRealizada={this.onBuscaRealizada} />
+            </Cartao>
+
           </div>
         )}
 
