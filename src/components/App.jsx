@@ -3,6 +3,8 @@ import Creditos from './Creditos.jsx'
 import Loading from './Loading.jsx'
 import Cartao from './Cartao.jsx'
 import MeuPonto from './MeuPonto.jsx'
+import { Button } from '@primereact/ui/button'
+import geoapifyClient from '../utils/geoapifyClient.js'
 
 class App extends Component {
   state = {
@@ -41,6 +43,20 @@ class App extends Component {
     return new Date().getFullYear()
   }
 
+onBuscaRealizada = (categoria, raio) => {
+  geoapifyClient.get('/places', {
+    params: {
+      categories: categoria,
+      filter: `circle:${this.state.longitude},${this.state.latitude},${raio}`,
+      bias: `proximity:${this.state.longitude},${this.state.latitude}`,
+      limit: 20
+    }
+  })
+    .then((resultado) => {
+      console.log(resultado.data.features)
+    })
+}
+
   render() {
     const estiloSubtitulo = {
       color: '#666',
@@ -64,14 +80,23 @@ class App extends Component {
         ) : this.state.latitude === null ? (
           <Loading mensagem="Aguardando permissão de localização..." />
         ) : (
-          <Cartao cabecalho="Você está aqui">
-            <MeuPonto
-              latitude={this.state.latitude}
-              longitude={this.state.longitude}
-              horarioLocalizacao={this.state.horarioLocalizacao}
-              onAtualizar={this.obterLocalizacao}
-            />
-          </Cartao>
+          <div>
+            <Cartao cabecalho="Você está aqui">
+              <MeuPonto
+                latitude={this.state.latitude}
+                longitude={this.state.longitude}
+                horarioLocalizacao={this.state.horarioLocalizacao}
+                onAtualizar={this.obterLocalizacao}
+              />
+            </Cartao>
+
+            <Button
+              type="button"
+              onClick={() => this.onBuscaRealizada('catering.cafe', 1000)}
+            >
+              Testar busca
+            </Button>
+          </div>
         )}
 
         <footer>RolêRadar © {this.obterAno()}</footer>
