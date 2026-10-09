@@ -5,13 +5,15 @@ import Cartao from './Cartao.jsx'
 import MeuPonto from './MeuPonto.jsx'
 import geoapifyClient from '../utils/geoapifyClient.js'
 import Busca from './Busca.jsx'
+import ListaLugares from './ListaLugares.jsx'
 
 class App extends Component {
   state = {
     latitude: null,
     longitude: null,
     horarioLocalizacao: null,
-    mensagemDeErro: null
+    mensagemDeErro: null,
+    lugares: null
   }
 
   obterLocalizacao = () => {
@@ -43,19 +45,20 @@ class App extends Component {
     return new Date().getFullYear()
   }
 
-onBuscaRealizada = (categoria, raio) => {
-  geoapifyClient.get('/places', {
-    params: {
-      categories: categoria,
-      filter: `circle:${this.state.longitude},${this.state.latitude},${raio}`,
-      bias: `proximity:${this.state.longitude},${this.state.latitude}`,
-      limit: 20
-    }
-  })
-    .then((resultado) => {
-      console.log(resultado.data.features)
+  onBuscaRealizada = (categoria, raio) => {
+    geoapifyClient.get('/places', {
+      params: {
+        categories: categoria,
+        filter: `circle:${this.state.longitude},${this.state.latitude},${raio}`,
+        bias: `proximity:${this.state.longitude},${this.state.latitude}`,
+        limit: 20
+      }
+    }).then((resultado) => {
+      this.setState({
+        lugares: resultado.data.features
+      })
     })
-}
+  }
 
   render() {
     const estiloSubtitulo = {
@@ -80,21 +83,38 @@ onBuscaRealizada = (categoria, raio) => {
         ) : this.state.latitude === null ? (
           <Loading mensagem="Aguardando permissão de localização..." />
         ) : (
-          <div>
-            <Cartao cabecalho="Você está aqui">
-              <MeuPonto
-                latitude={this.state.latitude}
-                longitude={this.state.longitude}
-                horarioLocalizacao={this.state.horarioLocalizacao}
-                onAtualizar={this.obterLocalizacao}
-              />
-            </Cartao>
 
-            <Cartao cabecalho="O que você procura?">
-              <Busca onBuscaRealizada={this.onBuscaRealizada} />
-            </Cartao>
+          <div className="grid">
+            <div className="col-12 md:col-6">
+              <Cartao cabecalho="Você está aqui">
+                <MeuPonto
+                  latitude={this.state.latitude}
+                  longitude={this.state.longitude}
+                  horarioLocalizacao={this.state.horarioLocalizacao}
+                  onAtualizar={this.obterLocalizacao}
+                />
+              </Cartao>
 
+              <Cartao cabecalho="O que você procura?">
+                <Busca
+                  onBuscaRealizada={this.onBuscaRealizada}
+                />
+              </Cartao>
+            </div>
+
+            <div className="col-12 md:col-6">
+              {this.state.lugares === null ? null : (
+                this.state.lugares.length === 0 ? (
+                  <p>
+                    Nenhum lugar encontrado. Tente aumentar o raio.
+                  </p>
+                ) : (
+                  <ListaLugares lugares={this.state.lugares} />
+                )
+              )}
+            </div>
           </div>
+          
         )}
 
         <footer>RolêRadar © {this.obterAno()}</footer>
